@@ -20,6 +20,8 @@ public class Game extends Canvas implements Runnable {
 	private HUD hud;
 	private Spawn spawner;
 	
+	public int frames;
+	
 	public Game()
 	{
 		handler = new Handler();
@@ -61,7 +63,7 @@ public class Game extends Canvas implements Runnable {
 		double ns = 1000000000 / amountOfTicks;
 		double delta = 0;
 		long timer = System.currentTimeMillis();
-		int frames = 0;
+		this.frames = 0;
 		while(running)
 		{
 			long now = System.nanoTime();
@@ -115,11 +117,13 @@ public class Game extends Canvas implements Runnable {
 		
 		hud.render(g);
 		
+		g.drawString("FPS: " + frames, 578, 450);
+		
 		g.dispose();
 		bs.show();
 	}
 	
-	public static int clamp(int var, int min, int max)
+	public static float clamp(float var, float min, float max)
 	{
 		if(var  >= max)
 			return var = max;

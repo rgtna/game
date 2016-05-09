@@ -5,18 +5,19 @@ import java.awt.Graphics;
 
 public class HUD {
 	
-	public static int HEALTH = 100;
+	public static float HEALTH = 100;
 	
-	private int greenValue = 255;
+	private float greenValue = 255f;
 	
 	private int score = 0;
 	private int level = 1;
 	
 	public void tick()
 	{
-		HEALTH = Game.clamp(HEALTH, 0, 100);
-		greenValue = Game.clamp(greenValue, 0, 255);
+		HEALTH = Game.clamp(HEALTH, 0f, 100f);
+		greenValue = Game.clamp(greenValue, 0f, 255f);
 		
+		//Increase score
 		score++;
 		
 		greenValue = HEALTH*2;
@@ -26,13 +27,17 @@ public class HUD {
 	{
 		g.setColor(Color.gray);
 		g.fillRect(15, 15, 200, 32);
-		g.setColor(new Color(75, greenValue, 0));
-		g.fillRect(15, 15, HEALTH * 2, 32);
+		g.setColor(new Color(75, (int)greenValue, 0));
+		g.fillRect(15, 15, (int)HEALTH * 2, 32);
 		g.setColor(Color.white);
 		g.drawRect(15, 15, 200, 32);
 		
+		//Display score and level
 		g.drawString("Score: " + score, 10, 64);
 		g.drawString("Level: " + level, 10, 80);
+		g.drawString("Press ESC to exit", 7, 445);
+		//Developer options
+		//g.drawString("Dev: cmd + esc to exit game...", 50, 60);
 	}
 	
 	public void score(int score)
