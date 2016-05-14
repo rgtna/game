@@ -12,6 +12,10 @@ public class HUD {
 	private int score = 0;
 	private int level = 1;
 	
+	private Handler handler;
+	
+	private int coins = 0;
+	
 	public void tick()
 	{
 		HEALTH = Game.clamp(HEALTH, 0f, 100f);
@@ -19,7 +23,7 @@ public class HUD {
 		
 		//Increase score
 		score++;
-		
+		//addCoin();
 		greenValue = HEALTH*2;
 	}
 	
@@ -35,7 +39,8 @@ public class HUD {
 		//Display score and level
 		g.drawString("Score: " + score, 10, 64);
 		g.drawString("Level: " + level, 10, 80);
-		g.drawString("Press ESC to exit", 7, 445);
+		g.drawString("ALPHA Ver. 0.1.3", 7, 445);
+		
 		//Developer options
 		//g.drawString("Dev: cmd + esc to exit game...", 50, 60);
 	}

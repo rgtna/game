@@ -4,7 +4,9 @@ import java.awt.Canvas;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.image.BufferStrategy;
+import java.io.IOException;
 import java.util.Random;
+import java.util.Scanner;
 
 public class Game extends Canvas implements Runnable {
 	
@@ -19,23 +21,46 @@ public class Game extends Canvas implements Runnable {
 	private Handler handler;
 	private HUD hud;
 	private Spawn spawner;
+	private Menu menu;
+	private Buy buy;
 	
 	public int frames;
+	
+	/*public enum STATE 
+	{
+		Menu,
+		Boss,
+		Game,
+		Help,
+		Buy,
+	};*/
+	
+	public STATE gameState = STATE.Menu;
 	
 	public Game()
 	{
 		handler = new Handler();
+		menu = new Menu(this, handler);
+		buy = new Buy();
+		
 		this.addKeyListener(new KeyInput(handler));
+		this.addMouseListener(menu);
 		
 		new Window(WIDTH, HEIGHT, "Game", this);
 		
 		hud = new HUD();
 		spawner = new Spawn(handler, hud);
 		r = new Random();
-		
-		handler.addObject(new Player(WIDTH/2-32, HEIGHT/2-32,ID.Player, handler));
-		//Enemies
-		handler.addObject(new BasicEnemy(r.nextInt(WIDTH), r.nextInt(HEIGHT),ID.BasicEnemy, handler));
+
+		if(gameState == STATE.Game)
+		{
+			
+		} else if (gameState == STATE.Menu) {
+			for(int i = 0; i <= 10; i++)
+			{
+				handler.addObject(new MenuParticle(r.nextInt(WIDTH), r.nextInt(HEIGHT), ID.Particle, handler));				
+			}
+		}
 	}
 	
 	public synchronized void start()
@@ -59,16 +84,18 @@ public class Game extends Canvas implements Runnable {
 	{
 		this.requestFocus();
 		long lastTime = System.nanoTime();
-		double amountOfTicks = 60.0;
+		double amountOfTicks = 80.0; //Changed from 60 to 80
 		double ns = 1000000000 / amountOfTicks;
 		double delta = 0;
 		long timer = System.currentTimeMillis();
 		this.frames = 0;
+		
 		while(running)
 		{
 			long now = System.nanoTime();
 			delta += (now - lastTime) / ns;
 			lastTime = now;
+			
 			while(delta >= 1)
 			{
 				tick();
@@ -85,7 +112,7 @@ public class Game extends Canvas implements Runnable {
 			if(System.currentTimeMillis() - timer > 1000)
 			{
 				timer += 1000;
-				System.out.println("FPS: " + frames);
+				//System.out.println("FPS: " + frames);
 				frames = 0;
 			}
 		}
@@ -94,9 +121,19 @@ public class Game extends Canvas implements Runnable {
 	
 	private void tick()
 	{
-		handler.tick();
-		hud.tick();
-		spawner.tick();
+		
+		//Controls game states...
+		if(gameState == STATE.Game || gameState == STATE.Boss)
+		{
+			handler.tick();
+			hud.tick();
+			spawner.tick();
+		} else if(gameState == STATE.Menu || gameState == STATE.Help) {// Will display menu or help menu if this is the state of the game.
+			handler.tick();
+			menu.tick();
+		} else if(gameState == STATE.Buy) {
+			buy.tick();
+		}
 	}
 	
 	private void render()
@@ -113,11 +150,18 @@ public class Game extends Canvas implements Runnable {
 		g.setColor(Color.black);
 		g.fillRect(0, 0, WIDTH, HEIGHT);
 		
-		handler.render(g);
 		
-		hud.render(g);
-		
-		g.drawString("FPS: " + frames, 578, 450);
+		if(gameState == STATE.Game || gameState == STATE.Boss)
+		{
+			handler.render(g);
+			hud.render(g);
+			g.drawString("FPS: " + frames, 578, 450);
+		} else if(gameState == STATE.Menu || gameState == STATE.Help) {
+			handler.render(g);
+			menu.render(g);
+		} else if(gameState == STATE.Buy){
+			buy.render(g);
+		}
 		
 		g.dispose();
 		bs.show();
@@ -133,7 +177,7 @@ public class Game extends Canvas implements Runnable {
 			return var;
 	}
 	
-	public static void main(String[] args)
+	public static void main(String[] args) 
 	{
 		new Game();
 	}

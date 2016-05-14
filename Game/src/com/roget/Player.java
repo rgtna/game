@@ -7,14 +7,16 @@ import java.awt.Rectangle;
 import java.io.IOException;
 import java.util.Random;
 
+
 public class Player extends GameObject{
 	
 	Random r = new Random();
 	Handler handler;
 	PlaySound ps = new PlaySound();
+	HUD hud = new HUD();
 	
-	private int hit = 0;
-	private boolean inCollide = false;
+	//private int hit = 0;
+	//private boolean inCollide = false;
 	
 	public Player(int x, int y, ID id, Handler handler) {
 		super(x, y, id);
@@ -47,7 +49,7 @@ public class Player extends GameObject{
 			if(tempObject.getId() == ID.BasicEnemy || tempObject.getId() == ID.FastEnemy || tempObject.getId() == ID.SmartEnemy)
 			{
 				if(getBounds().intersects(tempObject.getBounds())){
-					HUD.HEALTH -= 2;
+					HUD.HEALTH -= 0.75;
 					//inCollide = true;
 					//hit += 1;
 					//if(hit == 1 && inCollide == true){
@@ -58,21 +60,20 @@ public class Player extends GameObject{
 						}
 					//}
 				}
-				/*if(getBounds().intersects(tempObject.getBounds()) == false){
-					inCollide = false;
-					hit = 0;
-				}*/
-				//HUD.HEALTH -= 2;
-				//hi
+			}
+			
+			if(tempObject.getId() == ID.EnemyBoss) {
+				if(getBounds().intersects(tempObject.getBounds())){
+					HUD.HEALTH -= 4;
+					// ps.playSoundHurt();
+					}
 			}
 		}
 	}
+	
 	
 	public void render(Graphics g) {
 		g.setColor(Color.WHITE);
 		g.fillRect((int)x, (int)y, 32, 32);
 	}
-	
-	
-
 }
